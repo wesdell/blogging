@@ -3,12 +3,9 @@ package com.wesdell.blogging.controller;
 import com.wesdell.blogging.model.Article;
 import com.wesdell.blogging.service.ArticleService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -26,13 +23,28 @@ public class ArticleController {
         return articleService.getAllArticles();
     }
 
-    @GetMapping("/author")
-    public List<Article> getArticlesByAuthor(@RequestParam String name) {
-        return articleService.getArticlesByAuthor(name);
+    @GetMapping("/{id}")
+    public ResponseEntity<Article> getArticleById(@PathVariable Long id) {
+        return articleService.getArticleById(id)
+            .map(ResponseEntity::ok)
+            .orElse(ResponseEntity.notFound().build());
     }
 
-    @GetMapping("/date")
-    public List<Article> getArticlesByDate(@RequestParam String date) {
-        return articleService.getArticlesByPublishedDate(LocalDate.parse(date));
+    @PostMapping
+    public Article createArticle(@RequestBody Article article) {
+        return articleService.createArticle(article);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Article> updateArticle(@PathVariable Long id, @RequestBody Article article) {
+        return articleService.updateArticle(id, article)
+            .map(ResponseEntity::ok)
+            .orElse(ResponseEntity.notFound().build());
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteArticle(@PathVariable Long id) {
+        articleService.deleteArticle(id);
+        return ResponseEntity.noContent().build();
     }
 }
