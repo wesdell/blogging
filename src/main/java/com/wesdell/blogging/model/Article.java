@@ -4,9 +4,11 @@ import jakarta.persistence.*;
 import java.time.LocalDate;
 
 @Entity
+@Table
 public class Article {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @SequenceGenerator(name = "article_sequence", sequenceName = "article_sequence", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "article_sequence")
     private Long id;
 
     private String title;
