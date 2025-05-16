@@ -1,11 +1,14 @@
 package com.wesdell.blogging.controller;
 
 import com.wesdell.blogging.dto.ArticleDto;
+import com.wesdell.blogging.dto.CreateArticleDto;
+import com.wesdell.blogging.dto.UpdateArticleDto;
 import com.wesdell.blogging.mapper.ArticleMapper;
-import com.wesdell.blogging.model.Article;
 import com.wesdell.blogging.service.ArticleService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -36,13 +39,14 @@ public class ArticleController {
     }
 
     @PostMapping
-    public ArticleDto createArticle(@RequestBody Article article) {
-        return articleMapper.toDto(articleService.createArticle(article));
+    public ArticleDto createArticle(@Valid @RequestBody CreateArticleDto article) {
+        return articleMapper.toDto(articleService.createArticle(articleMapper.toEntity(article)));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ArticleDto> updateArticle(@PathVariable Long id, @RequestBody Article article) {
-        return ResponseEntity.ok(articleMapper.toDto(articleService.updateArticle(id, article)));
+    public ResponseEntity<ArticleDto> updateArticle(@PathVariable Long id, @Validated @RequestBody
+    UpdateArticleDto article) {
+        return ResponseEntity.ok(articleMapper.toDto(articleService.updateArticle(id, articleMapper.toEntity(article))));
     }
 
     @DeleteMapping("/{id}")
