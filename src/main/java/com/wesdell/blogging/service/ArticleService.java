@@ -25,22 +25,20 @@ public class ArticleService {
         return articleRepository.findById(id);
     }
 
-    public Article createArticle(Article article) {
-        Optional<Article> optionalArticle = articleRepository.findArticleByAuthor(article.getAuthor());
-        if (optionalArticle.isPresent()) {
-            throw new IllegalStateException("Author taken");
-        }
-        return articleRepository.save(article);
+    public Article createArticle(Article newArticle) {
+        return articleRepository.save(newArticle);
     }
 
-    public Optional<Article> updateArticle(Long id, Article updatedArticle) {
-        return articleRepository.findById(id).map(article -> {
-            article.setTitle(updatedArticle.getTitle());
-            article.setContent(updatedArticle.getContent());
-            article.setAuthor(updatedArticle.getAuthor());
-            article.setPublishedAt(updatedArticle.getPublishedAt());
-            return articleRepository.save(article);
-        });
+    public Article updateArticle(Long id, Article updatedArticle) {
+        Optional<Article> existingArticle = articleRepository.findById(id);
+        if (existingArticle.isEmpty()) {
+            throw new IllegalStateException("Article does not exist");
+        }
+        Article newUpdatedArticle = existingArticle.get();
+        newUpdatedArticle.setAuthor(updatedArticle.getAuthor());
+        newUpdatedArticle.setTitle(updatedArticle.getTitle());
+        newUpdatedArticle.setContent(updatedArticle.getContent());
+        return articleRepository.save(newUpdatedArticle);
     }
 
     public void deleteArticle(Long id) {
