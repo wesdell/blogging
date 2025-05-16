@@ -1,5 +1,7 @@
 package com.wesdell.blogging.controller;
 
+import com.wesdell.blogging.dto.ArticleDto;
+import com.wesdell.blogging.mapper.ArticleMapper;
 import com.wesdell.blogging.model.Article;
 import com.wesdell.blogging.service.ArticleService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,34 +14,35 @@ import java.util.List;
 @RequestMapping("api/v1/articles")
 public class ArticleController {
     private final ArticleService articleService;
+    private final ArticleMapper articleMapper;
 
     @Autowired
-    public ArticleController(ArticleService articleService) {
+    public ArticleController(ArticleService articleService, ArticleMapper articleMapper) {
         this.articleService = articleService;
+        this.articleMapper = articleMapper;
     }
 
     @GetMapping
-    public List<Article> getArticles() {
-        return articleService.getAllArticles();
+    public List<ArticleDto> getArticles() {
+        return articleService.getAllArticles().stream().map(articleMapper::toDto).toList();
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Article> getArticleById(@PathVariable Long id) {
+    public ResponseEntity<ArticleDto> getArticleById(@PathVariable Long id) {
         return articleService.getArticleById(id)
+            .map(articleMapper::toDto)
             .map(ResponseEntity::ok)
             .orElse(ResponseEntity.notFound().build());
     }
 
     @PostMapping
-    public Article createArticle(@RequestBody Article article) {
-        return articleService.createArticle(article);
+    public ArticleDto createArticle(@RequestBody Article article) {
+        return articleMapper.toDto(articleService.createArticle(article));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Article> updateArticle(@PathVariable Long id, @RequestBody Article article) {
-        return articleService.updateArticle(id, article)
-            .map(ResponseEntity::ok)
-            .orElse(ResponseEntity.notFound().build());
+    public ResponseEntity<ArticleDto> updateArticle(@PathVariable Long id, @RequestBody Article article) {
+        return ResponseEntity.ok(articleMapper.toDto(articleService.updateArticle(id, article)));
     }
 
     @DeleteMapping("/{id}")
