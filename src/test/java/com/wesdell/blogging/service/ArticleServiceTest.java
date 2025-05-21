@@ -1,4 +1,4 @@
-package service;
+package com.wesdell.blogging.service;
 
 import com.wesdell.blogging.model.Article;
 import com.wesdell.blogging.repository.ArticleRepository;
