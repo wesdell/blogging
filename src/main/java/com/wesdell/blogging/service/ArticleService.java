@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -35,9 +36,15 @@ public class ArticleService {
             throw new IllegalStateException("Article does not exist");
         }
         Article newUpdatedArticle = existingArticle.get();
-        newUpdatedArticle.setAuthor(updatedArticle.getAuthor());
-        newUpdatedArticle.setTitle(updatedArticle.getTitle());
-        newUpdatedArticle.setContent(updatedArticle.getContent());
+        newUpdatedArticle.setAuthor(
+            Objects.requireNonNullElse(updatedArticle.getAuthor(), existingArticle.get().getAuthor())
+        );
+        newUpdatedArticle.setTitle(
+            Objects.requireNonNullElse(updatedArticle.getTitle(), existingArticle.get().getTitle())
+        );
+        newUpdatedArticle.setContent(
+            Objects.requireNonNullElse(updatedArticle.getContent(), existingArticle.get().getContent())
+        );
         return articleRepository.save(newUpdatedArticle);
     }
 
